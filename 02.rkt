@@ -9,12 +9,17 @@
 (struct pwd (m n c s)
             #:transparent)
 
-(define (string->pwd string)
-  (let ([tokens (rest (regexp-match #rx"^([0-9]+)-([0-9]+) ([a-z]): ([a-z]+)$" string))])
-    (pwd (string->number (first tokens))
-         (string->number (second tokens))
-         (string-ref (third tokens) 0)
-         (fourth tokens))))
+; (define (string->pwd string)
+;   (let ([tokens (rest (regexp-match #rx"^([0-9]+)-([0-9]+) ([a-z]): ([a-z]+)$" string))])
+;     (pwd (string->number (first tokens))
+;          (string->number (second tokens))
+;          (string-ref (third tokens) 0)
+;          (fourth tokens))))
+
+(define (string->pwd str)
+  (match-let* ([(list mn c s) (string-split str)]
+               [(list m n) (map string->number (string-split mn "-"))])
+    (pwd m n (string-ref c 0) s)))
 
 (define (get-input)
   (map string->pwd (file->lines "02.txt")))
@@ -26,8 +31,7 @@
 (define (valid-pwd-p1? p)
   (let ([n (count (lambda (c) (char=? c (pwd-c p)))
                   (string->list (pwd-s p)))])
-    (and (>= n (pwd-m p))
-         (<= n (pwd-n p)))))
+    (<= (pwd-m p) n (pwd-n p))))
 
 (define (solve-part-1)
   (count valid-pwd-p1? (get-input)))
