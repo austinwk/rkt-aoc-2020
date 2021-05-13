@@ -23,6 +23,13 @@
                                         ".txt")
                            (lambda (port) (display data port))))
 
+; (define (write-template day)
+;   (call-with-output-file (string-append (~a day
+;                                             #:min-width 2
+;                                             #:align 'right
+;                                             #:left-pad-string "0")
+;                                         ".txt")))
+
 (module+ main
   (let ([day (vector-ref (current-command-line-arguments) 0)])
   (write-input day (get-input day))))
