@@ -52,26 +52,24 @@
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
-(define fields
+(define field-validators
   (hash "byr" (lambda (v) (string<=? "1920" v "2002"))
         "iyr" (lambda (v) (string<=? "2010" v "2020"))
         "eyr" (lambda (v) (string<=? "2020" v "2030"))
-        "hgt" (lambda (v) (let* ([len (string-length v)]
-                                 [unt (substring v (- len 2))])
-                            (case unt
-                              [("cm") (string<=? "150" (substring v 0 (- len 2)) "193")]
-                              [("in") (string<=? "59" (substring v 0 (- len 2)) "76")]
-                              [else #f])))
+        "hgt" (lambda (v) (case (substring v (- (string-length v) 2)) 
+                            [("cm") (string<=? "150" (string-trim v "cm") "193")]
+                            [("in") (string<=? "59" (string-trim v "in") "76")]
+                            [else #f]))
         "hcl" (lambda (v) (regexp-match? #px"^#[0-9a-f]{6}$" v))
         "ecl" (lambda (v) (member v '("amb" "blu" "brn" "gry" "grn" "hzl" "oth")))
         "pid" (lambda (v) (regexp-match? #px"^[0-9]{9}$" v))))
 
-(define keys (hash-keys fields))
+(define required-fields (hash-keys field-validators))
 
-(define (batch-valid? batch)
-  (for/and ([key (in-list keys)])
-    (let ([kv (assoc key batch)])
-      (and kv ((hash-ref fields (first kv)) (second kv))))))
+(define (passport-valid? passport)
+  (for/and ([req-fld (in-list required-fields)])
+    (let ([pp-fld (assoc req-fld passport)])
+      (and pp-fld ((hash-ref field-validators (first pp-fld)) (second pp-fld))))))
 
 (define (solve-part-2)
   (call-with-input-file
@@ -79,14 +77,14 @@
     (lambda (in)
       (let iter ([line (read-line in)]
                  [valid 0]
-                 [batch '()])
+                 [passport '()])
         (cond [(eof-object? line) valid]
-              [(string=? "" line) (if (batch-valid? batch)
+              [(string=? "" line) (if (passport-valid? passport)
                                       (iter (read-line in) (add1 valid) '())
                                       (iter (read-line in) valid '()))]
               [else (iter (read-line in)
                           valid
-                          (append batch
+                          (append passport
                                   (for/list ([token (string-split line)])
                                     (string-split token ":"))))])))))
 
