@@ -6,12 +6,10 @@
 ;; Day 4
 ;;------------------------------------------------------------------------------
 
+; Not used
 (struct pp-field (key val))
 
-; iyr:2016 hgt:193cm eyr:2029
-; byr:1934 hcl:#b6652a pid:901756621
-; ecl:brn
-
+; Not used
 (define (get-passports)
   (call-with-input-file
     "04.txt"
@@ -32,11 +30,6 @@
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
-; Get a line
-; Dice it up
-; Gather a batch
-; Batch valid?
-
 (define (solve-part-1)
   (call-with-input-file
     "04.txt"
@@ -45,8 +38,8 @@
                  [valid 0]
                  [batch '()])
         (cond [(eof-object? line) valid]
-              [(string=? "" line) (if (for/and ([field '("byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid")])
-                                        (member field batch))
+              [(string=? "" line) (if (for/and ([fld '("byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid")])
+                                        (member fld batch))
                                       (iter (read-line in) (add1 valid) '())
                                       (iter (read-line in) valid '()))]
               [else (iter (read-line in)
@@ -59,16 +52,28 @@
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
-(define fields #hash(("byr" . (lambda (v) (string>=? "1920" v "2002")))
-                     ("iyr" . (lambda (v) (string>=? "2010" v "2020")))
-                     ("eyr" . (lambda (v) (string>=? "2020" v "2030")))
-                     ("hgt" . (lambda (v) (let* ([len (string-length v)]
-                                                 [num (substring v 0 (- len 2))]
-                                                 [unt (substring v (- len 2))])
-                                            (case unt
-                                              [("cm") (string>=? "150" num "193")]
-                                              [("in") (string>=? "59" num "76")]
-                                              [else #f]))))))
+(define fields
+  (let ([h (make-hash)])
+    (hash-set! h "byr" (lambda (v) (string<=? "1920" v "2002")))
+    (hash-set! h "iyr" (lambda (v) (string<=? "2010" v "2020")))
+    (hash-set! h "eyr" (lambda (v) (string<=? "2020" v "2030")))
+    (hash-set! h "hgt" (lambda (v) (let* ([len (string-length v)]
+                                          [unt (substring v (- len 2))])
+                                     (case unt
+                                       [("cm") (string<=? "150" (substring v 0 (- len 2)) "193")]
+                                       [("in") (string<=? "59" (substring v 0 (- len 2)) "76")]
+                                       [else #f]))))
+    (hash-set! h "hcl" (lambda (v) (regexp-match? #px"^#[0-9a-f]{6}$" v)))
+    (hash-set! h "ecl" (lambda (v) (member v '("amb" "blu" "brn" "gry" "grn" "hzl" "oth"))))
+    (hash-set! h "pid" (lambda (v) (regexp-match? #px"^[0-9]{9}$" v)))
+    h))
+
+(define keys (hash-keys fields))
+
+(define (batch-valid? batch)
+  (for/and ([key (in-list keys)])
+    (let ([kv (assoc key batch)])
+      (and kv ((hash-ref fields (first kv)) (second kv))))))
 
 (define (solve-part-2)
   (call-with-input-file
@@ -78,9 +83,7 @@
                  [valid 0]
                  [batch '()])
         (cond [(eof-object? line) valid]
-              [(string=? "" line) (if (for/and ([field '("byr" "iyr" "eyr" "hgt" "hcl" "ecl" "pid")])
-                                        (let ([kv (assoc field batch)])
-                                          (and kv (case ))))
+              [(string=? "" line) (if (batch-valid? batch)
                                       (iter (read-line in) (add1 valid) '())
                                       (iter (read-line in) valid '()))]
               [else (iter (read-line in)
