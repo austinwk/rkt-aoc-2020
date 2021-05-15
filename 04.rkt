@@ -53,20 +53,18 @@
 ;;------------------------------------------------------------------------------
 
 (define fields
-  (let ([h (make-hash)])
-    (hash-set! h "byr" (lambda (v) (string<=? "1920" v "2002")))
-    (hash-set! h "iyr" (lambda (v) (string<=? "2010" v "2020")))
-    (hash-set! h "eyr" (lambda (v) (string<=? "2020" v "2030")))
-    (hash-set! h "hgt" (lambda (v) (let* ([len (string-length v)]
-                                          [unt (substring v (- len 2))])
-                                     (case unt
-                                       [("cm") (string<=? "150" (substring v 0 (- len 2)) "193")]
-                                       [("in") (string<=? "59" (substring v 0 (- len 2)) "76")]
-                                       [else #f]))))
-    (hash-set! h "hcl" (lambda (v) (regexp-match? #px"^#[0-9a-f]{6}$" v)))
-    (hash-set! h "ecl" (lambda (v) (member v '("amb" "blu" "brn" "gry" "grn" "hzl" "oth"))))
-    (hash-set! h "pid" (lambda (v) (regexp-match? #px"^[0-9]{9}$" v)))
-    h))
+  (hash "byr" (lambda (v) (string<=? "1920" v "2002"))
+        "iyr" (lambda (v) (string<=? "2010" v "2020"))
+        "eyr" (lambda (v) (string<=? "2020" v "2030"))
+        "hgt" (lambda (v) (let* ([len (string-length v)]
+                                 [unt (substring v (- len 2))])
+                            (case unt
+                              [("cm") (string<=? "150" (substring v 0 (- len 2)) "193")]
+                              [("in") (string<=? "59" (substring v 0 (- len 2)) "76")]
+                              [else #f])))
+        "hcl" (lambda (v) (regexp-match? #px"^#[0-9a-f]{6}$" v))
+        "ecl" (lambda (v) (member v '("amb" "blu" "brn" "gry" "grn" "hzl" "oth")))
+        "pid" (lambda (v) (regexp-match? #px"^[0-9]{9}$" v))))
 
 (define keys (hash-keys fields))
 
