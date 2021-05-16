@@ -4,9 +4,6 @@
 ;; Day 5
 ;;------------------------------------------------------------------------------
 
-(define (get-input)
-  (error "unimplemented"))
-
 ;;------------------------------------------------------------------------------
 ;; Part 1
 ;;------------------------------------------------------------------------------
@@ -26,18 +23,16 @@
   (+ (* 8 (seat-row pass)) (seat-col pass)))
 
 (define (seat-row pass)
-  (for/fold ([seats (range 128)]
-             #:result (first seats))
-            ([chr (in-list (string->list (substring pass 0 6)))])
-    (if (char=? chr #\F)
-        (take seats (/ (length seats) 2))
-        (drop seats (/ (length seats) 2)))))
+  (search-seats (substring pass 0 6) 128 #\F))
 
 (define (seat-col pass)
-  (for/fold ([seats (range 8)]
+  (search-seats (substring pass 7) 8 #\L))
+
+(define (search-seats instructions num-seats lower-char)
+  (for/fold ([seats (range num-seats)]
              #:result (first seats))
-            ([chr (in-list (string->list (substring pass 7)))])
-    (if (char=? chr #\L)
+            ([char (in-list (string->list instructions))])
+    (if (char=? char lower-char)
         (take seats (/ (length seats) 2))
         (drop seats (/ (length seats) 2)))))
 
