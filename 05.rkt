@@ -40,5 +40,20 @@
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
+; (define (solve-part-2)
+;  (call-with-input-file
+;    "05.txt"
+;    (lambda (in)
+;      (for/fold ([passes '()]
+;                 #:result (sort passes <))
+;                ([pass (in-port read-line in)])
+;        (cons (seat-id pass) passes)))))
+
 (define (solve-part-2)
-  (error "unimplemented"))
+ (call-with-input-file
+   "05.txt"
+   (lambda (in)
+     (for/list ([pass (in-port read-line in)])
+       (seat-id pass)))))
+
+; (define (my-seat seat-ids))
