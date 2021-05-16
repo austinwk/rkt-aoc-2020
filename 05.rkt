@@ -1,26 +1,22 @@
 #lang racket
 
 ;;------------------------------------------------------------------------------
-;; Day 1
+;; Day #
 ;;------------------------------------------------------------------------------
 
 (define (get-input)
-  (map string->number (file->lines "01.txt")))
+  (error "unimplemented"))
 
 ;;------------------------------------------------------------------------------
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-1) ;=> 902451
-  (for/first ([couple (in-combinations (get-input) 2)]
-              #:when (eq? 2020 (apply + couple)))
-    (apply * couple)))
+(define (solve-part-1)
+  (error "unimplemented"))
 
 ;;------------------------------------------------------------------------------
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-2) ;=> 85555470
-  (for/first ([triple (in-combinations (get-input) 3)]
-              #:when (eq? 2020 (apply + triple)))
-    (apply * triple)))
+(define (solve-part-2)
+  (error "unimplemented"))
