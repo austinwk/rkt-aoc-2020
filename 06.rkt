@@ -4,6 +4,8 @@
 ;; Day 6
 ;;------------------------------------------------------------------------------
 
+(require threading)
+
 ;;------------------------------------------------------------------------------
 ;; Part 1
 ;;------------------------------------------------------------------------------
@@ -38,13 +40,10 @@
       (let iter ([line (read-line in)]
                  [group '()]
                  [count 0])
-        (cond [(eof-object? line) (+ count (set-intersect-length group))]
+        (cond [(eof-object? line) (+ count (set-count (apply set-intersect group)))]
               [(string=? "" line) (iter (read-line in)
                                         '()
-                                        (+ count (set-intersect-length group)))]
+                                        (+ count (set-count (apply set-intersect group))))]
               [else (iter (read-line in)
                           (cons (list->set (string->list line)) group)
                           count)]))))) ;=> 3232
-
-(define (set-intersect-length set-list)
-  (length (set->list (apply set-intersect set-list))))
