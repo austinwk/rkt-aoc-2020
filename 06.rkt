@@ -32,4 +32,19 @@
 ;;------------------------------------------------------------------------------
 
 (define (solve-part-2)
-  (error "unimplemented"))
+  (call-with-input-file
+    "06.txt"
+    (lambda (in)
+      (let iter ([line (read-line in)]
+                 [group '()]
+                 [count 0])
+        (cond [(eof-object? line) (+ count (set-intersect-length group))]
+              [(string=? "" line) (iter (read-line in)
+                                        '()
+                                        (+ count (set-intersect-length group)))]
+              [else (iter (read-line in)
+                          (cons (list->set (string->list line)) group)
+                          count)]))))) ;=> 3232
+
+(define (set-intersect-length set-list)
+  (length (set->list (apply set-intersect set-list))))
