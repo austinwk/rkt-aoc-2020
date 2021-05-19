@@ -4,8 +4,6 @@
 ;; Day #
 ;;------------------------------------------------------------------------------
 
-; Question: how to (hash-set! h (values "key" "value")) ?
-
 (define (get-input)
   (call-with-input-file
     "07.txt"
