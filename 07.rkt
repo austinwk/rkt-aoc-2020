@@ -8,12 +8,12 @@
   (call-with-input-file
     "07.txt"
     (lambda (in)
-      (define rules (make-hash))
-      (for ([line (in-port read-line in)])
+      (for/fold ([rules (make-hash)])
+                ([line (in-port read-line in)])
         (let*-values ([(tokens) (string-split line #rx" bags contain no other bags.| bags contain | bags, | bag, | bags.| bag.")]
                       [(k v) (parse-rule tokens)])
-          (hash-set! rules k v)))
-      rules)))
+          (hash-set! rules k v)
+          rules)))))
 
 (define (parse-rule tokens)
   (values (car tokens)
@@ -33,7 +33,9 @@
           (add1 count)
           count)))) ;=> 274
 
-; Example: (hash "light green" #t)
+; Memoize to reduce drill-down
+; Example: (hash "light green" #t
+;                "dark yellow" #f)
 (define holds-gold-cache (make-hash))
 
 (define (holds-gold? rules bag)
