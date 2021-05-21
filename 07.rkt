@@ -1,7 +1,7 @@
 #lang racket
 
 ;;------------------------------------------------------------------------------
-;; Day #
+;; Day 7
 ;;------------------------------------------------------------------------------
 
 (define (get-rules)
@@ -33,27 +33,25 @@
           (add1 count)
           count)))) ;=> 274
 
-; Memoize to reduce drill-down
-; Example: (hash "light green" #t
-;                "dark yellow" #f)
-(define holds-gold-cache (make-hash))
-
 (define (holds-gold? rules bag)
-  (if (hash-has-key? holds-gold-cache bag)
-      (hash-ref holds-gold-cache bag)
-      (let ([sub-bags (hash-ref rules bag)])
-           (cond [(null? sub-bags)
-                    (hash-set! holds-gold-cache bag #f)
-                    #f]
-                 [(assoc "shiny gold" sub-bags)
-                    (hash-set! holds-gold-cache bag #t)
-                    #t]
-                 [else (for/or ([sub-bag (in-list sub-bags)])
-                         (holds-gold? rules (car sub-bag)))]))))
+  (let ([sub-bags (hash-ref rules bag)])
+        (cond [(null? sub-bags) #f]
+              [(assoc "shiny gold" sub-bags) #t]
+              [else (for/or ([sub-bag (in-list sub-bags)])
+                      (holds-gold? rules (car sub-bag)))])))
 
 ;;------------------------------------------------------------------------------
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
 (define (solve-part-2)
-  (error "unimplemented"))
+  (count-sub-bags (get-rules) "shiny gold")) ;=> 158730
+
+(define (count-sub-bags rules bag)
+  (let ([sub-bags (hash-ref rules bag)])
+    (if (null? sub-bags)
+        0
+        (for/sum ([sub-bag (in-list sub-bags)])
+          (+ (cdr sub-bag)
+             (* (cdr sub-bag)
+                (count-sub-bags rules (car sub-bag)))))))) ;=> 158730
