@@ -11,20 +11,22 @@
 (define (solve-part-1)
   (call-with-input-file
     "09.txt"
-    (lambda (in)        ; Init with preamble
-      (let iter ([chunk (do ([p '() (cons (string->number (read-line in)) p)])
+    (lambda (in)
+      (define (next-num) (string->number (read-line in)))
+      (let iter ([chunk (do ([p '() (cons (next-num) p)]) ; Init chunk with preamble
                             ((= 25 (length p)) p))]
-                 [target (string->number (read-line in))])
+                 [target (next-num)])
         (if (target-in-chunk? chunk target)
             (iter (cons target (take chunk 24))
-                  (string->number (read-line in)))
-            target)))))
+                  (next-num))
+            target))))) ;=> 507622668
 
 (define (target-in-chunk? chunk target)
   (for/or ([cmb (in-combinations chunk 2)])
     (match-let ([(list m n) cmb])
       (and (not (= m n))
            (= target (+ m n))))))
+
 ;;------------------------------------------------------------------------------
 ;; Part 2
 ;;------------------------------------------------------------------------------
