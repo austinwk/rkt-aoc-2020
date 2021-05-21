@@ -37,7 +37,7 @@
 ;;------------------------------------------------------------------------------
 
 (define (solve-part-2)
-  (repair-and-execute (get-instructions)))
+  (repair-and-execute (get-instructions))) ;=> 1023
 
 (define (repair-and-execute instructions)
   (let ([tgt-i (vector-length instructions)])
