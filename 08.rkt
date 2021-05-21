@@ -4,8 +4,7 @@
 ;; Day 8
 ;;------------------------------------------------------------------------------
 
-(struct instruction (op arg ex?)
-                    #:transparent)
+(struct instruction (op arg ex?))
 
 (define (get-instructions)
   (call-with-input-file
