@@ -27,10 +27,10 @@
     (if (instruction-ex? inst)
         acc
         (begin (vector-set! instructions i (struct-copy instruction inst [ex? #t]))
-               (case (instruction-op inst)
-                 [(acc) (execute-instruction instructions (add1 i) (+ acc (instruction-arg inst)))]
-                 [(jmp) (execute-instruction instructions (+ i (instruction-arg inst)) acc)]
-                 [(nop) (execute-instruction instructions (add1 i) acc)])))))
+               (match (instruction-op inst)
+                 ['acc (execute-instruction instructions (add1 i) (+ acc (instruction-arg inst)))]
+                 ['jmp (execute-instruction instructions (+ i (instruction-arg inst)) acc)]
+                 ['nop (execute-instruction instructions (add1 i) acc)])))))
 
 ;;------------------------------------------------------------------------------
 ;; Part 2
