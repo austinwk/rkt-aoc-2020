@@ -8,7 +8,7 @@
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-1)
+(define (solve-part-1) ;=> 507622668
   (call-with-input-file
     "09.txt"
     (lambda (in)
@@ -19,7 +19,7 @@
         (if (target-in-chunk? chunk target)
             (iter (cons target (take chunk 24))
                   (next-num))
-            target))))) ;=> 507622668
+            target)))))
 
 (define (target-in-chunk? chunk target)
   (for/or ([cmb (in-combinations chunk 2)])
@@ -31,19 +31,16 @@
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-2)
+(define (solve-part-2) ;=> 76688505
   (define target 507622668)
   (define nums (get-nums))
-  (for/fold ([all nums]
-             [others (cdr nums)]
-             [acc 0]
+  (let iter ([l1 nums]
+             [l2 (cdr nums)]
              [group '()]
-             #:result (+ (apply min group) (apply max group)))
-            ([_ (in-range +inf.0)])
-    (= acc target)
-    (if (> acc target)
-        (values (cdr all) (cddr all) 0 '())
-        (values all (cdr others) (+ acc (car others)) (cons (car others) group)))))
+             [acc 0])
+    (cond [(= acc target) (+ (apply min group) (apply max group))]
+          [(> acc target) (iter (cdr l1) (cddr l1) '() 0)]
+          [else (iter l1 (cdr l2) (cons (car l2) group) (+ acc (car l2)))])))
 
 (define (get-nums)
   (call-with-input-file
