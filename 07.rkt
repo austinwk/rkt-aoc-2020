@@ -25,13 +25,13 @@
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-1)
+(define (solve-part-1) ;=> 274
   (let ([rules (get-rules)])
     (for/fold ([count 0])
               ([bag (in-hash-keys rules)])
       (if (holds-gold? rules bag)
           (add1 count)
-          count)))) ;=> 274
+          count))))
 
 (define (holds-gold? rules bag)
   (let ([sub-bags (hash-ref rules bag)])
@@ -44,8 +44,8 @@
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-2)
-  (count-sub-bags (get-rules) "shiny gold")) ;=> 158730
+(define (solve-part-2) ;=> 158730
+  (count-sub-bags (get-rules) "shiny gold"))
 
 (define (count-sub-bags rules bag)
   (let ([sub-bags (hash-ref rules bag)])
@@ -54,4 +54,4 @@
         (for/sum ([sub-bag (in-list sub-bags)])
           (+ (cdr sub-bag)
              (* (cdr sub-bag)
-                (count-sub-bags rules (car sub-bag)))))))) ;=> 158730
+                (count-sub-bags rules (car sub-bag))))))))

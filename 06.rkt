@@ -4,13 +4,11 @@
 ;; Day 6
 ;;------------------------------------------------------------------------------
 
-(require threading)
-
 ;;------------------------------------------------------------------------------
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-1)
+(define (solve-part-1) ;=> 6443
   (call-with-input-file
     "06.txt"
     (lambda (in)
@@ -21,7 +19,7 @@
               [(string=? "" line) (iter (read-line in) '() (+ count (count-answers group)))]
               [else (iter (read-line in)
                           (cons (string->list line) group)
-                          count)]))))) ;=> 6443
+                          count)])))))
 
 (define (count-answers group)
   ((compose1 length
@@ -33,7 +31,7 @@
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-2)
+(define (solve-part-2) ;=> 3232
   (call-with-input-file
     "06.txt"
     (lambda (in)
@@ -46,4 +44,4 @@
                                         (+ count (set-count (apply set-intersect group))))]
               [else (iter (read-line in)
                           (cons (list->set (string->list line)) group)
-                          count)]))))) ;=> 3232
+                          count)])))))

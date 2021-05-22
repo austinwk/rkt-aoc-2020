@@ -19,8 +19,8 @@
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-1)
-  (execute-1 (get-instructions) 0 0)) ;=> 1200
+(define (solve-part-1) ;=> 1200
+  (execute-1 (get-instructions) 0 0))
 
 (define (execute-1 instructions i acc)
   (let ([inst (vector-ref instructions i)])
@@ -36,8 +36,8 @@
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-2)
-  (repair-and-execute (get-instructions))) ;=> 1023
+(define (solve-part-2) ;=> 1023
+  (repair-and-execute (get-instructions)))
 
 (define (repair-and-execute instructions)
   (let ([tgt-i (vector-length instructions)])

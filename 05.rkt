@@ -25,7 +25,7 @@
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-1)
+(define (solve-part-1) ;=> 855
   (call-with-input-file
     "05.txt"
     (lambda (in)
@@ -34,18 +34,18 @@
         (let ([id (seat-id pass)])
           (if (> id highest-seat-id)
               id
-              highest-seat-id)))))) ;=> 855
+              highest-seat-id))))))
 
 ;;------------------------------------------------------------------------------
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-2)
+(define (solve-part-2) ;=> 552
   (let ([pass-ids (all-pass-ids)])
     (for/first ([a (in-list pass-ids)]
                 [b (in-list (cdr pass-ids))]
                 #:when (not (= (add1 a) b)))
-      (add1 a)))) ;=> 552
+      (add1 a))))
 
 (define (all-pass-ids)
  (call-with-input-file
