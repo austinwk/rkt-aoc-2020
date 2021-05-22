@@ -41,5 +41,16 @@
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-2)
-  (error "unimplemented"))
+  (define (solve-part-2)
+    (for/sum ([perm (in-permutations (get-adapters))])
+      (if (valid-chain? perm) 1 0)))
+
+  (define (valid-chain? chain)
+    (and (<= (first chain) 3)
+         (>= (last chain) 149)            ; Known max
+         (let ([v (list->vector chain)])
+           (for/and ([i (in-range 92)]
+                     [j (in-range 1 93)]) ; Known length
+             (<= (abs (- (vector-ref v i)
+                         (vector-ref v j)))
+                 3)))))
