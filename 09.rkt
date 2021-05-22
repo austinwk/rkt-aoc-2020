@@ -32,4 +32,22 @@
 ;;------------------------------------------------------------------------------
 
 (define (solve-part-2)
-  (error "unimplemented"))
+  (define target 507622668)
+  (define nums (get-nums))
+  (for/fold ([all nums]
+             [others (cdr nums)]
+             [acc 0]
+             [group '()]
+             #:result (+ (apply min group) (apply max group)))
+            ([_ (in-range +inf.0)])
+    (= acc target)
+    (if (> acc target)
+        (values (cdr all) (cddr all) 0 '())
+        (values all (cdr others) (+ acc (car others)) (cons (car others) group)))))
+
+(define (get-nums)
+  (call-with-input-file
+    "09.txt"
+    (lambda (in)
+      (for/list ([line (in-lines in)])
+        (string->number line)))))
