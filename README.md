@@ -8,3 +8,5 @@ Aims:
 * Reduce unnecessary iterations
 * Sensible solutions
 * Balance clarity and brevity
+
+:heart: Suggestions, PRs, and questions welcome.
