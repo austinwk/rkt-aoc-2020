@@ -5,8 +5,8 @@ Solutions to [Advent of Code](https://adventofcode.com/) in [Racket](https://rac
 Aims:
 
 * No third-party dependencies
-* Reduce unnecessary iterations
+* Reduce iterations when it isn't a pain
 * Sensible solutions
 * Balance clarity and brevity
 
-:heart: Suggestions, PRs, and questions welcome.
+:heart: Questions, suggestions, and pull requests welcome.
