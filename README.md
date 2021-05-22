@@ -8,5 +8,3 @@ Aims:
 * Reduce iterations when it isn't a pain
 * Sensible solutions
 * Balance clarity and brevity
-
-:heart: Questions, suggestions, and pull requests welcome.
