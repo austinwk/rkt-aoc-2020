@@ -4,13 +4,15 @@
 ;; Day 4
 ;;------------------------------------------------------------------------------
 
+(define input-path "04.txt")
+
 ;;------------------------------------------------------------------------------
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
 (define (solve-part-1) ;=> 202
   (call-with-input-file
-    "04.txt"
+    input-path
     (lambda (in)
       (let iter ([line (read-line in)]
                  [valid 0]
@@ -32,7 +34,7 @@
 
 (define (solve-part-2) ;=> 137
   (call-with-input-file
-    "04.txt"
+    input-path
     (lambda (in)
       (let iter ([line (read-line in)]
                  [valid 0]

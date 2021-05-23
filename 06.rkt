@@ -4,13 +4,15 @@
 ;; Day 6
 ;;------------------------------------------------------------------------------
 
+(define input-path "06.txt")
+
 ;;------------------------------------------------------------------------------
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
 (define (solve-part-1) ;=> 6443
   (call-with-input-file
-    "06.txt"
+    input-path
     (lambda (in)
       (let iter ([line (read-line in)]
                  [group '()]
@@ -33,7 +35,7 @@
 
 (define (solve-part-2) ;=> 3232
   (call-with-input-file
-    "06.txt"
+    input-path
     (lambda (in)
       (let iter ([line (read-line in)]
                  [group '()]

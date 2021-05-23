@@ -4,9 +4,11 @@
 ;; Day 7
 ;;------------------------------------------------------------------------------
 
+(define input-path "07.txt")
+
 (define (get-rules)
   (call-with-input-file
-    "07.txt"
+    input-path
     (lambda (in)
       (for/fold ([rules (make-hash)])
                 ([line (in-port read-line in)])

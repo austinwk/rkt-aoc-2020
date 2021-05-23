@@ -4,6 +4,8 @@
 ;; Day 5
 ;;------------------------------------------------------------------------------
 
+(define input-path "05.txt")
+
 (define (seat-id pass)
   (+ (* 8 (seat-row pass)) (seat-col pass)))
 
@@ -27,7 +29,7 @@
 
 (define (solve-part-1) ;=> 855
   (call-with-input-file
-    "05.txt"
+    input-path
     (lambda (in)
       (for/fold ([highest-seat-id 0])
                 ([pass (in-port read-line in)])
@@ -49,7 +51,7 @@
 
 (define (all-pass-ids)
  (call-with-input-file
-   "05.txt"
+   input-path
    (lambda (in)
      (for/fold ([passes '()]
                 #:result (sort passes <))

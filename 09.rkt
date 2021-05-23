@@ -4,13 +4,15 @@
 ;; Day 9
 ;;------------------------------------------------------------------------------
 
+(define input-path "09.txt")
+
 ;;------------------------------------------------------------------------------
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
 (define (solve-part-1) ;=> 507622668
   (call-with-input-file
-    "09.txt"
+    input-path
     (lambda (in)
       (define (next-num) (string->number (read-line in)))
       (let iter ([chunk (do ([p '() (cons (next-num) p)]) ; Init chunk with preamble
@@ -44,7 +46,7 @@
 
 (define (get-nums)
   (call-with-input-file
-    "09.txt"
+    input-path
     (lambda (in)
       (for/list ([line (in-lines in)])
         (string->number line)))))

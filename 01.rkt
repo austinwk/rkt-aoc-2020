@@ -4,8 +4,10 @@
 ;; Day 1
 ;;------------------------------------------------------------------------------
 
+(define input-path "01.txt")
+
 (define (get-input)
-  (map string->number (file->lines "01.txt")))
+  (map string->number (file->lines input-path)))
 
 ;;------------------------------------------------------------------------------
 ;; Part 1

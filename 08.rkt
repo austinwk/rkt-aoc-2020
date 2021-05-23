@@ -4,11 +4,13 @@
 ;; Day 8
 ;;------------------------------------------------------------------------------
 
+(define input-path "08.txt")
+
 (struct instruction (op arg ex?))
 
 (define (get-instructions)
   (call-with-input-file
-    "08.txt"
+    input-path
     (lambda (in)
       (for/vector ([line (in-port read-line in)])
         (instruction (string->symbol (substring line 0 3))

@@ -4,11 +4,13 @@
 ;; Day 2
 ;;------------------------------------------------------------------------------
 
+(define input-path "02.txt")
+
 (struct pwd (m n c s)
             #:transparent)
 
 (define (get-input)
-  (map string->pwd (file->lines "02.txt")))
+  (map string->pwd (file->lines input-path)))
 
 (define (string->pwd str)
   (match-let* ([(list mn c s) (string-split str)]
