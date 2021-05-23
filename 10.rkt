@@ -10,8 +10,9 @@
   (call-with-input-file
     input-path
     (lambda (in)
-      (for/list ([line (in-lines in)])
-        (string->number line)))))
+      (let ([adapters (for/list ([line (in-lines in)])
+                        (string->number line))])
+        (make-connection adapters)))))
 
 (define (make-connection adapters)
   ((compose1 list->vector
@@ -25,7 +26,7 @@
 ;;------------------------------------------------------------------------------
 
 (define (solve-part-1) ;=> 1885
-  (let* ([conn (make-connection (get-adapters))]
+  (let* ([conn (get-adapters)]
          [len (vector-length conn)])
     (for/fold ([ones 0]
                [threes 0]
@@ -43,12 +44,12 @@
 ;; Credit: https://github.com/viliampucik/adventofcode/blob/master/2020/10.py
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-2)
+(define (solve-part-2) ;=> 2024782584832
   (define counts (make-hash))
   (hash-set! counts 0 1)
-  (define chain (vector-drop (make-connection (get-adapters)) 1))
-  (for ([i (in-vector chain)])
-    (hash-set! counts i (+ (hash-ref! counts (- i 3) 0)
-                           (hash-ref! counts (- i 2) 0)
-                           (hash-ref! counts (- i 1) 0))))
-  (hash-ref counts 152))
+  (define adapters (vector-drop (get-adapters) 1))
+  (for ([a (in-vector adapters)])
+    (hash-set! counts a (+ (hash-ref! counts (- a 3) 0)
+                           (hash-ref! counts (- a 2) 0)
+                           (hash-ref! counts (- a 1) 0))))
+  (hash-ref counts (vector-ref adapters (sub1 (vector-length adapters)))))
