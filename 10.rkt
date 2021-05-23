@@ -13,6 +13,13 @@
       (for/list ([line (in-lines in)])
         (string->number line)))))
 
+(define (make-connection adapters)
+  ((compose1 list->vector
+             (lambda (ls) (sort ls <))
+             (lambda (ls) (cons 0 ls))
+             (lambda (ls) (cons (+ 3 (apply max ls)) ls)))
+   adapters))
+
 ;;------------------------------------------------------------------------------
 ;; Part 1
 ;;------------------------------------------------------------------------------
@@ -30,29 +37,18 @@
         [2 (values ones threes)]
         [3 (values ones (add1 threes))]))))
 
-(define (make-connection adapters)
-  ((compose1 list->vector
-             (lambda (ls) (sort ls <))
-             (lambda (ls) (cons 0 ls))
-             (lambda (ls) (cons (+ 3 (apply max ls)) ls)))
-   adapters))
-
 ;;------------------------------------------------------------------------------
 ;; Part 2
 ;;
 ;; Credit: https://github.com/viliampucik/adventofcode/blob/master/2020/10.py
 ;;------------------------------------------------------------------------------
 
-  (define (solve-part-2)
-    (for/sum ([perm (in-permutations (get-adapters))])
-      (if (valid-chain? perm) 1 0)))
-
-  (define (valid-chain? chain)
-    (and (<= (first chain) 3)
-         (>= (last chain) 149)            ; Known max
-         (let ([v (list->vector chain)])
-           (for/and ([i (in-range 92)]
-                     [j (in-range 1 93)]) ; Known length
-             (<= (abs (- (vector-ref v i)
-                         (vector-ref v j)))
-                 3)))))
+(define (solve-part-2)
+  (define counts (make-hash))
+  (hash-set! counts 0 1)
+  (define chain (vector-drop (make-connection (get-adapters)) 1))
+  (for ([i (in-vector chain)])
+    (hash-set! counts i (+ (hash-ref! counts (- i 3) 0)
+                           (hash-ref! counts (- i 2) 0)
+                           (hash-ref! counts (- i 1) 0))))
+  (hash-ref counts 152))
