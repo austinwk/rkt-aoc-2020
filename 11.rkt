@@ -23,63 +23,59 @@
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-1)
-  (let iter ([count 0]
-             [previous (get-layout)])
-    (let ([next (next-layout previous)])
-      (if (equal? previous next)
-          count
-          (iter (add1 count) next)))))
-
-(define layout-rows 93)
-(define layout-cols 94)
+(define num-rows 93)
+(define num-cols 94)
 (define floor-char #\.)
 (define occupied-char #\#)
 (define empty-char #\L)
 
+(define (solve-part-1)
+  (let iter ([current (get-layout)])
+    (let ([next (next-layout current)])
+      (if (equal? current next)
+          next
+          (iter next)))))
+
 (define (next-layout layout)
-  (define next-layout (make-blank-layout))
-  (for* ([row (in-range layout-rows)]
-         [col (in-range layout-cols)])
-    (vector-set! (vector-ref next-layout row) col (next-state-at layout row col)))
-  next-layout)
+  (define next (make-layout))
+  (for* ([row (in-range num-rows)]
+         [col (in-range num-cols)])
+    (vector-set! (vector-ref next row) col (next-seat layout row col)))
+  next)
 
-(define (make-blank-layout)
-  (for/vector ([_ (in-range layout-rows)])
-    (make-vector layout-cols)))
+(define (make-layout)
+  (for/vector ([row (in-range num-rows)])
+    (make-vector num-cols)))
 
-(define (next-state-at layout row col)
-  (define seat-char (layout-ref layout row col))
-  (for/fold ([num-empty 0]
-             [num-occupied 0]
-             #:result (interpret-seat-state seat-char num-empty num-occupied))
-             ;             N        NE      E       SE      S       SW       W         NW
-            ([offset '((-1 . 0) (-1 . 1) (0 . 1) (1 . 1) (1 . 0) (1 . -1) (0 . -1) (-1 . -1))])
-    (match (layout-ref layout (+ row (car offset)) (+ col (cdr offset)))
-      [empty-char (values (add1 num-empty) num-occupied)]
-      [occupied-char (values num-empty (add1 num-occupied))]
-      [floor-char (values num-empty num-occupied)])))
+(define (next-seat layout row col)
+  (let* ([current (layout-ref layout row col)]
+         [surrounding (surrounding-seats layout row col)]
+         [num-occupied (count (lambda (c) (char=? c occupied-char)) surrounding)]
+         [num-empty (count (lambda (c) (char=? c empty-char)) surrounding)])
+    (cond [(char=? floor-char current) floor-char]
+          [(and (char=? empty-char current)
+                (= 0 num-occupied))
+             occupied-char]
+          [(and (char=? occupied-char current)
+                (>= 4 num-occupied))
+             empty-char]
+          [else current])))
 
-(define (interpret-seat-state seat-char num-empty num-occupied)
-  (cond [(char=? seat-char floor-char) floor-char]
-        [(and (char=? seat-char empty-char) (= 0 num-occupied)) occupied-char]
-        [(and (char=? seat-char occupied-char) (>= 4 num-occupied)) empty-char]
-        [else seat-char]))       
+(define (surrounding-seats layout row col)
+  (list (layout-ref layout (sub1 row)       col)    ; North
+        (layout-ref layout (sub1 row) (add1 col))   ; Northeast
+        (layout-ref layout       row  (add1 col))   ; East
+        (layout-ref layout (add1 row) (add1 col))   ; Southeast
+        (layout-ref layout (add1 row)       col)    ; South
+        (layout-ref layout (add1 row) (sub1 col))   ; Southwest
+        (layout-ref layout       row  (sub1 col))   ; West
+        (layout-ref layout (sub1 row) (sub1 col)))) ; Northwest
 
 (define (layout-ref layout row col)
-  (if (and (> layout-rows row -1)
-           (> layout-cols col -1))
+  (if (and (< -1 row num-rows)
+           (< -1 col num-cols))
       (vector-ref (vector-ref layout row) col)
-      empty-char))
-
-; n:  (sub1 row) col
-; ne: (sub1 row) (add1 col)
-; e:  row        (add1 col)
-; se: (add1 row) (add1 col)
-; s:  (add1 row) col
-; sw: (add1 row) (sub1 col)
-; w:  row        (sub1 col)
-; nw  (sub1 row) (sub1 col)
+      floor-char)) ; Anything out of bounds is floor
 
 ;;------------------------------------------------------------------------------
 ;; Part 2
