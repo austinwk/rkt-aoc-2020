@@ -4,12 +4,6 @@
 ;; Day 11
 ;;------------------------------------------------------------------------------
 
-; If a seat is empty (L) and there are no occupied seats adjacent to it, the seat becomes occupied.
-; If a seat is occupied (#) and four or more seats adjacent to it are also occupied, the seat becomes empty.
-; Otherwise, the seat's state does not change.
-; Floor (.) never changes; seats don't move, and nobody sits on the floor.
-; Simulate your seating area by applying the seating rules repeatedly until no seats change state. How many seats end up occupied?
-
 (define input-path "11.txt")
 
 (define (get-layout)
@@ -23,11 +17,9 @@
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
-(define num-rows 93)
-(define num-cols 94)
-(define floor-char #\.)
-(define occupied-char #\#)
-(define empty-char #\L)
+(define FLOOR_CHAR #\.)
+(define OCCUPIED_CHAR #\#)
+(define EMPTY_CHAR #\L)
 
 (define (solve-part-1)
   (let iter ([current (get-layout)])
@@ -37,29 +29,42 @@
           (iter next)))))
 
 (define (next-layout layout)
-  (define next (make-layout))
-  (for* ([row (in-range num-rows)]
-         [col (in-range num-cols)])
-    (vector-set! (vector-ref next row) col (next-seat layout row col)))
-  next)
+  (let* ([num-rows (vector-length layout)]
+         [num-cols (vector-length (vector-ref layout 0))]
+         [next (make-matrix num-rows num-cols)])
+    (for* ([row (in-range num-rows)]
+           [col (in-range num-cols)])
+      (vector-set! (vector-ref next row) col (next-seat layout row col)))
+    next))
 
-(define (make-layout)
+(define (make-matrix num-rows num-cols)
   (for/vector ([row (in-range num-rows)])
     (make-vector num-cols)))
 
 (define (next-seat layout row col)
-  (let* ([current (layout-ref layout row col)]
+  (let* ([seat (layout-ref layout row col)]
          [surrounding (surrounding-seats layout row col)]
-         [num-occupied (count (lambda (c) (char=? c occupied-char)) surrounding)]
-         [num-empty (count (lambda (c) (char=? c empty-char)) surrounding)])
-    (cond [(char=? floor-char current) floor-char]
-          [(and (char=? empty-char current)
-                (= 0 num-occupied))
-             occupied-char]
-          [(and (char=? occupied-char current)
-                (>= 4 num-occupied))
-             empty-char]
-          [else current])))
+         [num-occupied (count-occupied surrounding)]
+         [num-empty (count-empty surrounding)])
+    (cond [(floor? seat) FLOOR_CHAR]
+          [(and (seat-empty? seat) (= 0 num-occupied)) OCCUPIED_CHAR]
+          [(and (seat-occupied? seat) (>= 4 num-occupied)) EMPTY_CHAR]
+          [else seat])))
+    
+(define (floor? char)
+  (char=? FLOOR_CHAR char))
+  
+(define (seat-occupied? char)
+  (char=? OCCUPIED_CHAR char))
+
+(define (seat-empty? char)
+  (char=? EMPTY_CHAR char))
+
+(define (count-occupied seats)
+  (count (lambda (seat) (seat-occupied? seat)) seats))
+
+(define (count-empty seats)
+  (count (lambda (seat) (seat-empty? seat)) seats))
 
 (define (surrounding-seats layout row col)
   (list (layout-ref layout (sub1 row)       col)    ; North
@@ -72,10 +77,12 @@
         (layout-ref layout (sub1 row) (sub1 col)))) ; Northwest
 
 (define (layout-ref layout row col)
-  (if (and (< -1 row num-rows)
-           (< -1 col num-cols))
-      (vector-ref (vector-ref layout row) col)
-      floor-char)) ; Anything out of bounds is floor
+  (let ([num-rows (vector-length layout)]
+        [num-cols (vector-length (vector-ref layout 0))])
+    (if (and (< -1 row num-rows)
+             (< -1 col num-cols))
+        (vector-ref (vector-ref layout row) col)
+        FLOOR_CHAR))) ; Anything out of bounds is floor
 
 ;;------------------------------------------------------------------------------
 ;; Part 2
