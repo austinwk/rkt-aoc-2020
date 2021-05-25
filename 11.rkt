@@ -25,7 +25,8 @@
   (let iter ([current (get-layout)])
     (let ([next (next-layout current)])
       (if (equal? current next)
-          next
+          (for/sum ([row (in-vector next)])
+            (count-occupied (vector->list row)))
           (iter next)))))
 
 (define (next-layout layout)
@@ -48,7 +49,7 @@
          [num-empty (count-empty surrounding)])
     (cond [(floor? seat) FLOOR_CHAR]
           [(and (seat-empty? seat) (= 0 num-occupied)) OCCUPIED_CHAR]
-          [(and (seat-occupied? seat) (>= 4 num-occupied)) EMPTY_CHAR]
+          [(and (seat-occupied? seat) (>= num-occupied 4)) EMPTY_CHAR]
           [else seat])))
     
 (define (floor? char)
@@ -174,17 +175,34 @@
     (check-eq? (next-seat layout1 0 0)
                (layout-ref layout2 0 0))
     (check-eq? (next-seat layout2 0 0)
-               (layout-ref layout3 0 0)))
-  
-  ; (test-case "next-layout"
-  ;   (test-equal? "layout1 -> layout2"
-  ;     (next-layout layout1) layout2)
-  ;   (test-equal? "layout2 -> layout3"
-  ;     (next-layout layout2) layout3)
-  ;   (test-equal? "layout3 -> layout4"
-  ;     (next-layout layout3) layout4)
-  ;   (test-equal? "layout4 -> layout5"
-  ;     (next-layout layout4) layout5)
-  ;   (test-equal? "layout5 -> layout6"
-  ;     (next-layout layout5) layout6))
-)
+               (layout-ref layout3 0 0))
+    (check-eq? (next-seat layout2 1 2)
+               (layout-ref layout3 1 2)))
+
+  (test-case "count-occupied"
+    (check-eq? (count-occupied '(#\. #\L #\# #\. #\L #\# #\. #\#)) 3)
+    (check-eq? (count-occupied '(#\. #\L #\. #\. #\L #\L #\. #\L)) 0)
+    (check-eq? (count-occupied '(#\# #\# #\# #\. #\L #\# #\. #\L)) 4))
+
+  (test-case "count-empty"
+    (check-eq? (count-empty '(#\. #\L #\# #\. #\L #\# #\. #\#)) 2)
+    (check-eq? (count-empty '(#\. #\. #\. #\. #\. #\# #\. #\#)) 0)
+    (check-eq? (count-empty '(#\L #\# #\L #\. #\L #\# #\. #\L)) 4))
+
+  (test-case "surrounding-seats"
+    (check-equal? (surrounding-seats layout3 5 6)
+                  '(#\L #\. #\. #\. #\. #\. #\L #\L))
+    (check-equal? (surrounding-seats layout2 0 0)
+                  '(#\. #\. #\. #\# #\# #\. #\. #\.)))
+
+  (test-case "next-layout"
+    (test-equal? "layout1 -> layout2"
+      (next-layout layout1) layout2)
+    (test-equal? "layout2 -> layout3"
+      (next-layout layout2) layout3)
+    (test-equal? "layout3 -> layout4" ; Fails?
+      (next-layout layout3) layout4)
+    (test-equal? "layout4 -> layout5"
+      (next-layout layout4) layout5)
+    (test-equal? "layout5 -> layout6"
+      (next-layout layout5) layout6)))
