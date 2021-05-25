@@ -34,7 +34,7 @@
         [num-cols (vector-length (vector-ref layout 0))])
     (if (in-bounds? layout row col)
         (vector-ref (vector-ref layout row) col)
-        FLOOR_CHAR))) ; Anything out of bounds is floor
+        #f)))
 
 (define (in-bounds? layout row col)
   (let ([num-rows (vector-length layout)]
@@ -43,13 +43,13 @@
          (< -1 col num-cols))))
 
 (define (floor? char)
-  (char=? FLOOR_CHAR char))
+  (eq? FLOOR_CHAR char))
   
 (define (seat-occupied? char)
-  (char=? OCCUPIED_CHAR char))
+  (eq? OCCUPIED_CHAR char))
 
 (define (seat-empty? char)
-  (char=? EMPTY_CHAR char))
+  (eq? EMPTY_CHAR char))
 
 (define (count-occupied seats)
   (count (lambda (seat) (seat-occupied? seat)) seats))
@@ -61,7 +61,7 @@
 ;; Part 1
 ;;------------------------------------------------------------------------------
 
-(define (solve-part-1)
+(define (solve-part-1) ;=> 2249
   (let iter ([current (get-layout)])
     (let ([next (next-layout current next-seat-1)])
       (if (equal? current next)
@@ -93,31 +93,41 @@
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
-; (define (solve-part-2)
-;   (let iter ([current (get-layout)])
-;     (let ([next (next-layout current next-seat-2)])
-;       (if (equal? current next)
-;           (for/sum ([row (in-vector next)])
-;             (count-occupied (vector->list row)))
-;           (iter next)))))
+(define (solve-part-2) ;=> 2023
+  (let iter ([current (get-layout)])
+    (let ([next (next-layout current next-seat-2)])
+      (if (equal? current next)
+          (for/sum ([row (in-vector next)])
+            (count-occupied (vector->list row)))
+          (iter next)))))
 
-; (define (next-seat-2 layout row col)
-;   (let* ([seat (layout-ref layout row col)]
-;          [visible (visible-seats layout row col)]
-;          [num-occupied (count-occupied visible)]
-;          [num-empty (count-empty visible)])
-;     (cond [(floor? seat) FLOOR_CHAR]
-;           [(and (seat-empty? seat) (= 0 num-occupied)) OCCUPIED_CHAR]
-;           [(and (seat-occupied? seat) (>= num-occupied 5)) EMPTY_CHAR]
-;           [else seat])))
+(define (next-seat-2 layout row col)
+  (let* ([seat (layout-ref layout row col)]
+         [visible (visible-seats layout row col)]
+         [num-occupied (count-occupied visible)]
+         [num-empty (count-empty visible)])
+    (cond [(floor? seat) FLOOR_CHAR]
+          [(and (seat-empty? seat) (= 0 num-occupied)) OCCUPIED_CHAR]
+          [(and (seat-occupied? seat) (>= num-occupied 5)) EMPTY_CHAR]
+          [else seat])))
 
-; (define (visible-seats layout row col)
-;   (for/first ))
+(define (visible-seats layout row col)
+  (list (look layout row col -1  0)   ; North
+        (look layout row col -1  1)   ; Northeast
+        (look layout row col  0  1)   ; East
+        (look layout row col  1  1)   ; Southeast
+        (look layout row col  1  0)   ; South
+        (look layout row col  1 -1)   ; Southwest
+        (look layout row col  0 -1)   ; West
+        (look layout row col -1 -1))) ; Northwest
 
-; (define (look layout row col row-change col-change)
-;   (do ([next-row (+ row row-change)]
-;        [next-col (+ col col-change)]))
-;   (layout-ref layout (+ row row-change) (+ col col-change)))
+(define (look layout row col row-change col-change)
+  (let iter ([next-row (+ row row-change)]
+             [next-col (+ col col-change)])
+    (let ([see (layout-ref layout next-row next-col)])
+      (if (floor? see)
+          (iter (+ next-row row-change) (+ next-col col-change))
+          see))))
 
 ;;------------------------------------------------------------------------------
 ;; Tests
@@ -220,4 +230,4 @@
     (check-equal? (surrounding-seats layout3 5 6)
                   '(#\L #\. #\. #\. #\. #\. #\L #\L))
     (check-equal? (surrounding-seats layout2 0 0)
-                  '(#\. #\. #\. #\# #\# #\. #\. #\.))))
+                  '(#f #f #\. #\# #\# #f #f #f))))
