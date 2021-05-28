@@ -14,14 +14,13 @@
   (call-with-input-file
     input-path
     (lambda (in)
-      (for/fold ([north-south 0] ; North:+, South:-
-                 [east-west 0]   ; East:+, West:-
-                 [facing 90]     ; North:0*, East:90*, South:180*, West:270*
+      (for/fold ([north-south 0]
+                 [east-west 0]
+                 [facing "E"]
                  #:result (+ (abs north-south) (abs east-west)))
                 ([line (in-lines in)])
         (let ([action (substring line 0 1)]
               [value (string->number (substring line 1))])
-              (printf "~a, ~a, ~a\n" action value facing)
           (do-action north-south east-west facing action value))))))
 
 (define (do-action north-south east-west facing action value)
@@ -31,21 +30,16 @@
     [("E") (values north-south (+ east-west value) facing)]
     [("W") (values north-south (- east-west value) facing)]
     [("L" "R") (values north-south east-west (rotate facing action value))]
-    [("F") (do-action north-south east-west facing (degrees->action facing) value)]))
+    [("F") (do-action north-south east-west facing facing value)]))
+
+(define directions #("N" "E" "S" "W"))
 
 (define (rotate facing action value)
-  (let* ([change (if (string=? "S" action) (- value) value)]
-         [degrees (abs (+ facing change))])
-    (if (> degrees 270)
-        (- 360 degrees)
-        degrees)))
-
-(define (degrees->action degrees)
-  (case degrees
-    [(0)   "N"]
-    [(90)  "E"]
-    [(180) "S"]
-    [(270) "W"]))
+  (let ([sign (if (string=? "L" action) - +)])
+    (vector-ref directions
+                (modulo (+ (vector-memq facing directions)
+                           (sign (/ value 90)))
+                        4))))
 
 ;;------------------------------------------------------------------------------
 ;; Part 2
