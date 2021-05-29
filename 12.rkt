@@ -45,5 +45,15 @@
 ;; Part 2
 ;;------------------------------------------------------------------------------
 
+;      s-ew:  0  s-ns:  0  w-ew: 10  w-ns:  1
+; F10  s-ew:100  s-ns: 10  w-ew: 10  w-ns:  1
+; N3   s-ew:100  s-ns: 10  w-ew: 10  w-ns:  4
+; F7   s-ew:170  s-ns: 38  w-ew: 10  w-ns:  4
+; R90  s-ew:170  s-ns: 38  w-ew:  4  w-ns:-10
+; F11  s-ew:214  s-ns:-72  w-ew:  4  w-ns:-10
+
 (define (solve-part-2)
-  (error "unimplemented"))
+  (for/fold ([wayp-ns 1]
+             [wayp-ew 10]
+             [ship-ns 0]
+             [ship-ew 0]
